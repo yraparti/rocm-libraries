@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: MIT
 
 import logging
-from typing import Tuple, List
 
 GEMM_PIPELINES = ["mem", "compv3", "compv4"]
 
@@ -252,7 +251,7 @@ def validate_dimension_alignment(
     warp_tile_m: int,
     warp_tile_n: int,
     warp_tile_k: int,
-) -> Tuple[bool, List[str]]:
+) -> tuple[bool, list[str]]:
     """Check if tile dimensions are properly aligned with warp dimensions."""
     alignment_issues = []
 
@@ -279,7 +278,7 @@ def validate_lds_capacity(
     a_datatype: str,
     b_datatype: str,
     pipeline: str,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     """Validate LDS capacity requirements."""
     matrix_a_size = (tile_m * tile_k) * element_size(a_datatype)
     matrix_b_size = (tile_n * tile_k) * element_size(b_datatype)
@@ -307,7 +306,7 @@ def validate_gemm_warp_tile_combination(
     b_datatype: str,
     c_datatype: str,
     gpu_name: str,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     """Validate warp tile combination against GPU-specific supported combinations."""
 
     # Construct the key for looking up supported combinations
@@ -349,7 +348,7 @@ def validate_gemm_preshuffle_warp_tile_combination(
     b_datatype: str,
     c_datatype: str,
     gpu_name: str,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     """Validate warp tile combination against GPU-specific supported combinations."""
 
     # Construct the key for looking up supported combinations
@@ -550,7 +549,7 @@ def get_dtype_string(datatype: str) -> str:
     return dtype_map.get(datatype, "float")
 
 
-def get_abc_layouts(layout_code: str) -> Tuple[str, str, str]:
+def get_abc_layouts(layout_code: str) -> tuple[str, str, str]:
     """
     Return (ALayout, BLayout, CLayout) from a 3-letter code like 'rcr', 'ccr', 'crr', 'rrr'.
     """
@@ -562,7 +561,7 @@ def get_abc_layouts(layout_code: str) -> Tuple[str, str, str]:
     return a_layout, b_layout, c_layout
 
 
-def get_abcd_layouts(layout_code: str) -> Tuple[str, str, str, List[str]]:
+def get_abcd_layouts(layout_code: str) -> tuple[str, str, str, list[str]]:
     """
     Return (ALayout, BLayout, CLayout) from a 3-letter code like 'rcrr', 'ccrr', 'crrr', 'rrrr'.
     """
@@ -586,7 +585,7 @@ def validate_whole_wg_cover_configuration(
     layout,
     a_datatype,
     b_datatype,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     # Validate whole workgroup cover configuration
 
     warp_size = 64
@@ -687,7 +686,7 @@ def wg_cover_core_validation(
     BlockSize: int,
     vector_load_size: int,
     warp_size: int,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     if XPerTile % vector_load_size != 0:
         return False, "XPerTile is not divisible by vector_load_size"
 
@@ -847,7 +846,7 @@ def validate_vector_load_alignment(
     m_iter_per_warp: int,
     wave_size: int,
     vector_load_size: int,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     try:
         # Calculate the memory access pattern size
         a_element_size = element_size(a_datatype)
@@ -878,7 +877,7 @@ def validate_m0_m1_m2_configuration(
     a_datatype: str,
     vector_load_size: int = 16,
     warp_size: int = 64,
-) -> Tuple[bool, str]:
+) -> tuple[bool, str]:
     """
     Validate M0, M1, M2 configuration for matrix A row-major layout.
     This ensures proper memory access pattern alignment.

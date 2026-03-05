@@ -8,7 +8,6 @@ import argparse
 import csv
 import time
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional
 
 
 class GemmBenchmark:
@@ -17,7 +16,7 @@ class GemmBenchmark:
         self.verbose = verbose
         self.results = []
 
-    def discover_kernels(self) -> List[Path]:
+    def discover_kernels(self) -> list[Path]:
         """Find all benchmark_gemm_* executables in the build directory"""
         bin_dir = self.build_dir / "bin"
         if not bin_dir.exists():
@@ -31,7 +30,7 @@ class GemmBenchmark:
                 print(f"  - {k.name}")
         return kernels
 
-    def extract_kernel_info(self, kernel_path: Path) -> Dict[str, str]:
+    def extract_kernel_info(self, kernel_path: Path) -> dict[str, str]:
         """Extract comprehensive kernel information from filename"""
         name = kernel_path.stem
 
@@ -75,7 +74,7 @@ class GemmBenchmark:
 
         return info
 
-    def parse_detailed_config(self, kernel_name: str) -> Dict:
+    def parse_detailed_config(self, kernel_name: str) -> dict:
         """Parse detailed configuration from kernel name"""
         config = {
             "tile_sizes": {"tile_m": 0, "tile_n": 0, "tile_k": 0},
@@ -164,7 +163,7 @@ class GemmBenchmark:
 
         return config
 
-    def generate_config_id(self, info: Dict) -> str:
+    def generate_config_id(self, info: dict) -> str:
         """Generate a compact config ID from kernel info"""
         # Create a compact identifier
         parts = [
@@ -196,7 +195,7 @@ class GemmBenchmark:
 
         return "_".join(parts)
 
-    def run_kernel(self, kernel_path: Path, params: Dict[str, str]) -> Optional[Dict]:
+    def run_kernel(self, kernel_path: Path, params: dict[str, str]) -> dict | None:
         """Run a single kernel with given parameters and save output to individual JSON file"""
         # Create results directory
         results_dir = self.build_dir / "results"
@@ -243,7 +242,7 @@ class GemmBenchmark:
             print(f"Error running {kernel_path.name}: {e}")
             return None
 
-    def parse_json_file(self, json_file: Path) -> Optional[Dict]:
+    def parse_json_file(self, json_file: Path) -> dict | None:
         """Parse JSON data from individual kernel output file"""
         try:
             with open(json_file, "r") as f:
@@ -274,7 +273,7 @@ class GemmBenchmark:
 
     def benchmark_problem_size(
         self,
-        kernels: List[Path],
+        kernels: list[Path],
         m: int,
         n: int,
         k: int,
@@ -284,7 +283,7 @@ class GemmBenchmark:
         repeat: int = 100,
         flush_cache: bool = True,
         rotating_count: int = 1000,
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Benchmark all kernels for a specific problem size"""
         results = []
 
@@ -341,8 +340,8 @@ class GemmBenchmark:
         return results
 
     def find_best_kernel(
-        self, results: List[Dict], metric: str = "tflops"
-    ) -> Optional[Dict]:
+        self, results: list[dict], metric: str = "tflops"
+    ) -> dict | None:
         """Find the best performing kernel based on metric"""
         if not results:
             return None
@@ -358,14 +357,14 @@ class GemmBenchmark:
 
     def benchmark_sweep(
         self,
-        problem_sizes: List[Tuple[int, int, int]],
-        split_k_values: List[int] = [1],
+        problem_sizes: list[tuple[int, int, int]],
+        split_k_values: list[int] = [1],
         verify: bool = False,
         warmup: int = 50,
         repeat: int = 100,
         flush_cache: bool = True,
         rotating_count: int = 1000,
-    ) -> Dict:
+    ) -> dict:
         """Run comprehensive benchmark sweep"""
         kernels = self.discover_kernels()
         if not kernels:
@@ -425,7 +424,7 @@ class GemmBenchmark:
 
         print(f"Results exported to {filename}")
 
-    def export_best_kernels(self, best_kernels: Dict, filename: str):
+    def export_best_kernels(self, best_kernels: dict, filename: str):
         """Export best kernel selections to file"""
         with open(filename, "w") as f:
             f.write("# Best kernel selections\n")
@@ -440,7 +439,7 @@ class GemmBenchmark:
 
         print(f"Best kernels exported to {filename}")
 
-    def export_json(self, filename: str, best_kernels: Dict = None):
+    def export_json(self, filename: str, best_kernels: dict = None):
         """Export all results and best kernels to JSON with comprehensive metadata"""
         from datetime import datetime
 
